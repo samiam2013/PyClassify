@@ -16,7 +16,7 @@ where ... truncates a very long base-64 encoding of the image with or without th
 
 
 it will respond with something like 
-```
+```json
 {
     "success": true,
     "upload_size": 1,
