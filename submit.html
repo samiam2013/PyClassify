@@ -1,0 +1,75 @@
+<html>
+
+<head>
+    <title>classify server</title>
+</head>
+
+<body>
+    <p>This is python server for POSTing images and receiving classifications and weights</p>
+    <form action="/classify" method="post" enctype="multipart/form-data" id="image_form">
+        <input type="file" name="image" accept="image/jpeg"><br />
+        <input type="submit" value="Upload">
+    </form>
+    <br />
+    result:
+    <div id="result"></div>
+
+    <script>
+        const convertBase64 = (file) => {
+            return new Promise((resolve, reject) => {
+                const fileReader = new FileReader();
+                fileReader.readAsDataURL(file);
+
+                fileReader.onload = () => {
+                    resolve(fileReader.result);
+                };
+
+                fileReader.onerror = (error) => {
+                    reject(error);
+                };
+            });
+        };
+
+        const base64awaited = async (file) => {
+            let b64img = await convertBase64(file)
+            return b64img
+        }
+
+        // hang an event handler on the form submit event to intercept it and
+        // post the form data as JSON
+        document.getElementById('image_form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var form = e.target;
+            var formData = new FormData(form);
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var image = e.target.result;
+                console.log({ image });
+                var json = JSON.stringify({
+                    'image': image
+                });
+                console.log({ json });
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+                xhr.onload = function () {
+                    var res = JSON.parse(xhr.responseText);
+                    console.log(res);
+                    var result = document.getElementById('result');
+                    result.innerHTML = '';
+                    result.innerHTML += '<p>Success : ' + res.success + '</p>';
+                    result.innerHTML += '<p>Upload Size : ' + res.upload_size + '</p>';
+                    // result.innerHTML += '<img src="' + res.image + '" />';
+                    
+                    // for each "classifications" element, add a new paragraph to the result div
+                    for (const[key,value] of Object.entries(res.classifications)) {
+                        result.innerHTML += '<p>' + key + ' : ' + value + '</p>';
+                    }
+                
+                };
+                xhr.send(json);
+            };
+            reader.readAsDataURL(formData.get('image'));
+        });
+    </script>
