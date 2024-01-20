@@ -9,10 +9,10 @@ This is not built with any Python Web Framework, instead relying on the very bas
 it expects a POST request to the endpoint `/classify` with a JSON-encoded JPEG image  
 
 ```json
-{"image": "data:image/jpeg;base64,iVBORw0KGgoAAA...}
+{"image": "data:image/jpeg;base64,iVBORw0KGgoAAA..."}
 ```
 
-with or without the `data:image/jpeg;base64,`, that's just something my JS wanted to add.
+where ... truncates a very long base-64 encoding of the image with or without the `data:image/jpeg;base64,`, that's just something my JS wanted to add.
 
 
 it will respond with something like 
