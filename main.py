@@ -65,6 +65,8 @@ class MyServer(BaseHTTPRequestHandler):
             self.end_headers()
 
             classes = get_image_classes(filename)
+            # delete the file
+            os.remove(filename)
             if classes is None:
                 fh.close()
                 error_json(self, 500, "Internal server error")
@@ -84,14 +86,12 @@ def get_image_classes(img_path):
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)
-
     prediction = model.predict(img_array,verbose=0)
-    preds = decode_predictions(prediction, top=10)
 
-    top_labels = []
+    preds = decode_predictions(prediction, top=10)[0]
+
     label_probs = dict()
-    for pred in preds[0]:
-        top_labels.append(pred[1])
+    for pred in preds:
         label_probs[pred[1]] = str(pred[2])
     return label_probs
 
