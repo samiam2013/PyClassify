@@ -1,13 +1,15 @@
 <html>
 
 <head>
-    <title>classify server</title>
+    <title>PyClassify</title>
 </head>
 
 <body>
-    <p>This is python server for POSTing images and receiving classifications and weights</p>
+    <h1>PyClassify</h1>
+    <p>This is a python server for POSTing images and receiving classifications and weights</p>
     <form action="/classify" method="post" enctype="multipart/form-data" id="image_form">
-        <input type="file" name="image" accept="image/jpeg"><br />
+        <input type="file" name="image" accept="image/jpeg">
+        <br/><br/>
         <input type="submit" value="Upload">
     </form>
     <br />
@@ -58,15 +60,11 @@
                     console.log(res);
                     var result = document.getElementById('result');
                     result.innerHTML = '';
-                    result.innerHTML += '<p>Success : ' + res.success + '</p>';
-                    result.innerHTML += '<p>Upload Size : ' + res.upload_size + '</p>';
-                    // result.innerHTML += '<img src="' + res.image + '" />';
                     
                     // for each "classifications" element, add a new paragraph to the result div
                     for (const[key,value] of Object.entries(res.classifications)) {
-                        result.innerHTML += '<p>' + key + ' : ' + value + '</p>';
+                        result.innerHTML += `<p style="margin:0.3rem; font-size: ${value*1.1+1}rem">${key}: ${(100*value).toFixed(2)}%</p>`;
                     }
-                
                 };
                 xhr.send(json);
             };
