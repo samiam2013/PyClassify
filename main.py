@@ -1,11 +1,13 @@
 # Python 3 server example
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from dotenv import load_dotenv
 import json
 import base64
 import time
 import os
 import numpy as np
 
+load_dotenv()
 print("Loading tensorflow...")
 # TF freaks about lack of cuda gpu without this
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
@@ -22,8 +24,12 @@ model = ResNet50(weights='imagenet')
 model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
 print("ResNet50 model loaded.")
 
-hostName = "localhost"
-serverPort = 8080
+hostName = os.getenv("HOSTNAME") or "localhost"
+serverPort = int(os.getenv("PORT")) or 8080
+imagesPath = os.getenv("IMAGES_PATH") or ""
+
+if(not imagesPath == "" and not os.path.exists("imagesPath")):
+    os.makedirs(imagesPath)
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -56,7 +62,7 @@ class MyServer(BaseHTTPRequestHandler):
                 image = image[len("data:image/jpeg;base64,"):]
             
             # get the current time + .jpg save the image
-            filename = str(time.time()) + ".jpg"
+            filename = imagesPath + "/" + str(time.time()) + ".jpg"
             with open(filename, "wb") as fh:
                 fh.write(base64.b64decode(image))
 
@@ -66,7 +72,7 @@ class MyServer(BaseHTTPRequestHandler):
 
             classes = get_image_classes(filename)
             # delete the file
-            os.remove(filename)
+            os.remove(filename) if imagesPath == "" else None
             if classes is None:
                 fh.close()
                 error_json(self, 500, "Internal server error")
@@ -77,6 +83,7 @@ class MyServer(BaseHTTPRequestHandler):
             }
             json_response = json.dumps(response)
             self.wfile.write(bytes(json_response, "utf-8"))
+            open(filename + ".json", "wb").write(bytes(json_response, "utf-8")) if imagesPath == "" else None
         except Exception as e:
             error_json(self, 500, str(e))
 
