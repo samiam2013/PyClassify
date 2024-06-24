@@ -48,7 +48,7 @@ jobs:
 
     - name: Send test request
       run: |
-        OUT=$(cat example_image.txt | curl -X POST http://localhost:8080/classify -H "Content-Type: application/json" -d @-)
+        OUT=$(cat example_image.json | curl -X POST http://localhost:8080/classify -H "Content-Type: application/json" -d @-)
         echo $OUT
         if echo $OUT | grep '"success": true'; then
           echo "passed"
