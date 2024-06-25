@@ -25,7 +25,8 @@ model.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accurac
 print("ResNet50 model loaded.")
 
 hostName = os.getenv("HOSTNAME") or "localhost"
-serverPort = int(os.getenv("PORT")) or 8080
+serverPort = os.getenv("PORT") or 8080
+serverPort = int(serverPort)
 imagesPath = os.getenv("IMAGES_PATH") or ""
 
 if(not imagesPath == "" and not os.path.exists("imagesPath")):
