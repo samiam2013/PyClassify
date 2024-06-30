@@ -5,6 +5,21 @@ This is a result of Google's TensorFlow team no longer supporting Go, a programm
 
 Because I want to write my crawlers, which require image classification, in Go, but Python is the only Tensorflow supported language I really know, I have to do this somewhere, but my primary server for the site this is operating in service of _doesn't even have enough ram to load tensorflow_.
 
+## Run uing Docker
+```bash
+git clone https://github.com/somethingsoftware/PyClassify.git
+cd PyClassify
+docker build -t pyclassify .
+docker run -dp 127.0.0.1:3000:3000 pyclassify
+```
+## Run in Terminal
+```bash
+git clone https://github.com/somethingsoftware/PyClassify.git
+cd PyClassify
+pip install -r requirements.txt
+python main.py
+```
+
 This is not built with any Python Web Framework, instead relying on the very basic http.server 
 it expects a POST request to the endpoint `/classify` with a JSON-encoded JPEG image  
 
